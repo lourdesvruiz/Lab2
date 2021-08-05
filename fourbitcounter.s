@@ -3,12 +3,12 @@
 ; Autor: Lourdes Ruiz 
 ; Compilador: pic-as (v2.30), MPLABX V5.40
 ; 
-; Programa: dos contadores de 4 bits que incrementa en RA0, RA1 y RA3, RA4, respectivamente
+; Programa: dos contadores de 4 bits que incrementa y decrementa en RA0, RA1 y RA3, RA4, respectivamente
   ;sumador de los dos contadores en RA2 y resultado en puerto C
 ; Hardware: LEDs en el puerto B, D y C, pushbuttons en pulldown en puerto A
 ; 
 ; Creado: 1 de agosto, 2021
-; Ultima modificación: , 2021
+; Ultima modificación: 5 de agosto, 2021
 
 
 ; PIC16F887 Configuration Bit Settings
@@ -62,7 +62,7 @@ main:
     
      ;-----------------loop principal--------------------
  loop: 
-    btfsc PORTA, 0      ;si se presiona el pushbutton, entonces se llama a la función de incrementar 
+    btfsc PORTA, 0      ;bit test f, skip if clear; si se presiona el pushbutton, entonces se llama a la función de incrementar 
     call inc_portb
     
     btfsc PORTA, 1
@@ -93,6 +93,7 @@ conf:
     bsf    TRISA, 0   ; RA0 como entrada para pushbutton
     bsf    TRISA, 1   ; RA1 como entrada para pushbutton
     bsf    TRISA, 2   ; RA2 como entrada para pushbutton de sumador     
+   
     ;segundo contador 
     clrf TRISD
     bsf  TRISA, 3
@@ -123,7 +124,7 @@ conf:
  ;---------------------sub rutinas--------------------
  inc_portb:             ;incrementar el puerto B
     btfsc PORTA, 0      ;vuelve a revisar si está presionada (valor de 1)
-    goto $-1          ;hasta que suelte (valor de 0) ya salta y ejecuta el resto del código 
+    goto $-1            ;hasta que suelte (valor de 0) ya salta y ejecuta el resto del código 
     incf   PORTB
     btfsc PORTB, 4
     clrf  PORTB
@@ -152,10 +153,10 @@ inc_portd2:
    goto $-1
    decf   PORTD
    btfsc PORTD, 7
-   call four2 
+   call four2            ;llama a la subrutina four
    return 
  
- four:
+ four:                   ;se hace un clear en los 4 bits más signifactivos 
     bcf    PORTB, 4
     bcf    PORTB, 5
     bcf    PORTB, 6
